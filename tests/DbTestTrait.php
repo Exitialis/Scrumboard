@@ -38,4 +38,18 @@ trait DbTestTrait
     {
         return factory(User::class)->create();
     }
+
+    public function actingAsUser()
+    {
+        $user = $this->getUser();
+        $this->actingAs($user);
+        return $user;
+    }
+
+    public function actingAsProductOwner()
+    {
+        $user = $this->getProductOwner();
+        $this->actingAs($user);
+        return $user;
+    }
 }

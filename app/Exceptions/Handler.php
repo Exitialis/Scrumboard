@@ -4,6 +4,8 @@ namespace App\Exceptions;
 
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
 
 class Handler extends ExceptionHandler
 {
@@ -41,12 +43,16 @@ class Handler extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param  \Exception  $e
      * @return \Illuminate\Http\Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, Exception $e)
     {
-        return response()->json($exception);
-        // return parent::render($request, $exception);
+        if ($e instanceof AuthenticationException) {
+            return (new \App\Exceptions\AuthenticationException("Token missing or invalid"))->render();
+        } else if ($e instanceof ValidationException) {
+            return (new \App\Exceptions\ValidationException($e->errors()))->render();
+        }
+        return parent::render($request, $e);
     }
 }

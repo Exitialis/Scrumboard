@@ -29,9 +29,9 @@ class AddReferences extends Migration
     public function down()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->dropForeign('creator');
-            $table->dropForeign('executor');
-            $table->dropForeign('sprint');
+            $table->dropForeign('tasks_creator_foreign');
+            $table->dropForeign('tasks_executor_foreign');
+            $table->dropForeign('tasks_sprint_foreign');
         });
     }
 }

@@ -22,6 +22,8 @@ class TasksTest extends DbTestCase
             'name' => 'Test',
         ])->assertOk();
 
+        dd($response);
+
         $this->assertDatabaseHas('tasks', [
             'name' => 'Test',
             'creator' => $user->id,
