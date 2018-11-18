@@ -1,6 +1,7 @@
 <?php
 
 use Faker\Generator as Faker;
+use App\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,9 +16,18 @@ use Faker\Generator as Faker;
 
 $factory->define(App\User::class, function (Faker $faker) {
     return [
-        'name' => $faker->name,
+        'username' => $faker->name,
         'email' => $faker->unique()->safeEmail,
+        'group' => User::MEMBER,
         'password' => '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // secret
         'remember_token' => str_random(10),
     ];
+});
+
+$factory->state(App\User::class, 'product_owner', function(Faker $faker) {
+    return ['group' => USER::PRODUCT_OWNER];
+});
+
+$factory->state(App\User::class, 'scrum_master', function(Faker $faker) {
+    return ['group' => USER::SCRUM_MASTER];
 });
