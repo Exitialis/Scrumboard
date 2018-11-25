@@ -4,10 +4,8 @@ namespace App\Exceptions;
 
 class AuthenticationException extends BaseException
 {
-    public $status = 401;
-
-    public function __construct()
+    public function __construct(string $message = null)
     {
-        parent::__construct('Неверное имя пользователя или пароль.');
+        parent::__construct($message ? : 'Неверное имя пользователя или пароль.', 401, 'AuthenticationError');
     }
 }

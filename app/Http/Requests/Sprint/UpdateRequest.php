@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Tasks;
+namespace App\Http\Requests\Sprint;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\User;
-use App\Models\Task;
 
-class CreateRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +13,7 @@ class CreateRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('create', Task::class);
+        return true;
     }
 
     /**
@@ -26,7 +24,9 @@ class CreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tasks|max:255',
+            'date_start' => 'required|date',
+            'date_finish' => 'required|date',
+            'status' => 'required|in:0,1,2'
         ];
     }
 }

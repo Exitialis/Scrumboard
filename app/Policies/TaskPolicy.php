@@ -2,7 +2,7 @@
 
 namespace App\Policies;
 
-use App\User;
+use App\Models\User;
 use App\Models\Task;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -10,10 +10,17 @@ class TaskPolicy
 {
     use HandlesAuthorization;
 
+    public function before(User $user, $ability)
+    {
+        if ($user->isProductOwner()) {
+            return true;
+        }
+    }
+
     /**
      * Determine whether the user can view the task.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @param  \App\Models\Task  $task
      * @return mixed
      */
@@ -25,59 +32,59 @@ class TaskPolicy
     /**
      * Determine whether the user can create tasks.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @return mixed
      */
     public function create(User $user)
     {
-        return $user->group === User::PRODUCT_OWNER;
+        return false;
     }
 
     /**
      * Determine whether the user can update the task.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @param  \App\Models\Task  $task
      * @return mixed
      */
     public function update(User $user, Task $task)
     {
-        return $user->group === User::PRODUCT_OWNER;
+        return $user->isMember() || $user->isScrumMaster();
     }
 
     /**
      * Determine whether the user can delete the task.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @param  \App\Models\Task  $task
      * @return mixed
      */
     public function delete(User $user, Task $task)
     {
-        return $user->group === USER::PRODUCT_OWNER;
+        return false;
     }
 
     /**
      * Determine whether the user can restore the task.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @param  \App\Models\Task  $task
      * @return mixed
      */
     public function restore(User $user, Task $task)
     {
-        //
+        return false;
     }
 
     /**
      * Determine whether the user can permanently delete the task.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @param  \App\Models\Task  $task
      * @return mixed
      */
     public function forceDelete(User $user, Task $task)
     {
-        //
+        return false;
     }
 }

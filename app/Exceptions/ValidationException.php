@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-class ValidationException extends ApiException
+class ValidationException extends BaseException
 {
     /**
      * ValidationException constructor.

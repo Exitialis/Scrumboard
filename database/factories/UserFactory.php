@@ -1,7 +1,7 @@
 <?php
 
 use Faker\Generator as Faker;
-use App\User;
+use App\Models\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +14,7 @@ use App\User;
 |
  */
 
-$factory->define(App\User::class, function (Faker $faker) {
+$factory->define(App\Models\User::class, function (Faker $faker) {
     return [
         'username' => $faker->userName,
         'email' => $faker->unique()->safeEmail,
@@ -24,10 +24,10 @@ $factory->define(App\User::class, function (Faker $faker) {
     ];
 });
 
-$factory->state(App\User::class, 'product_owner', function (Faker $faker) {
+$factory->state(App\Models\User::class, 'product_owner', function (Faker $faker) {
     return ['group' => USER::PRODUCT_OWNER];
 });
 
-$factory->state(App\User::class, 'scrum_master', function (Faker $faker) {
+$factory->state(App\Models\User::class, 'scrum_master', function (Faker $faker) {
     return ['group' => USER::SCRUM_MASTER];
 });

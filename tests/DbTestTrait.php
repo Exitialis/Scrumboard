@@ -3,8 +3,10 @@
 namespace Tests;
 
 use App\Payment;
-use App\User;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Sprint;
+use App\Models\Task;
 
 trait DbTestTrait
 {
@@ -29,6 +31,11 @@ trait DbTestTrait
         return factory(User::class)->states('product_owner')->create();
     }
 
+    public function getScrumMaster()
+    {
+        return factory(User::class)->states('scrum_master')->create();
+    }
+
     public function getUsers(int $count)
     {
         return factory(User::class, $count)->create();
@@ -39,17 +46,17 @@ trait DbTestTrait
         return factory(User::class)->create();
     }
 
-    public function actingAsUser()
+    public function createTask(int $executor = null, int $sprint = null)
     {
-        $user = $this->getUser();
-        $this->actingAs($user);
-        return $user;
+        return factory(Task::class)->create([
+            'creator' => $this->user ? $this->user->id : null,
+            'executor' => $executor,
+            'sprint' => $sprint
+        ]);
     }
 
-    public function actingAsProductOwner()
+    public function createSprint()
     {
-        $user = $this->getProductOwner();
-        $this->actingAs($user);
-        return $user;
+        return factory(Sprint::class)->create();
     }
 }

@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class Handler extends ExceptionHandler
 {
@@ -52,6 +53,8 @@ class Handler extends ExceptionHandler
             return (new \App\Exceptions\AuthenticationException("Token missing or invalid"))->render();
         } else if ($e instanceof ValidationException) {
             return (new \App\Exceptions\ValidationException($e->errors()))->render();
+        } else if ($e instanceof AuthorizationException) {
+            return (new \App\Exceptions\AuthorizationException())->render();
         }
         return parent::render($request, $e);
     }

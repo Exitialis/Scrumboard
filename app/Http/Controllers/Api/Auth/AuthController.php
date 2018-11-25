@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\User;
+use App\Models\User;
 use App\Exceptions\AuthenticationException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class AuthController extends Controller
 {
@@ -29,8 +31,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->only('username', 'password');
-        if (!$token = JWTAuth::attempt($credentials)) {
-            throw new AuthenticationException();
+        if (!$token = auth()->attempt($credentials)) {
+            throw new AuthorizationException('Неверный логин или пароль');
         }
 
         return response([
@@ -53,5 +55,15 @@ class AuthController extends Controller
         return response([
             'status' => 200,
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        auth()->logout();
+
+        return response()->json([
+            'status' => 200,
+            'data' => 'Logged out Successfully.'
+        ], 200);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -18,6 +18,10 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $hidden = [
         'password', 'remember_token',
+    ];
+
+    public $casts = [
+        'group' => 'integer'
     ];
 
     const MEMBER = 0;
@@ -42,5 +46,20 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function isProductOwner()
+    {
+        return $this->group === self::PRODUCT_OWNER;
+    }
+
+    public function isMember()
+    {
+        return $this->group === self::MEMBER;
+    }
+
+    public function isScrumMaster()
+    {
+        return $this->group === self::SCRUM_MASTER;
     }
 }

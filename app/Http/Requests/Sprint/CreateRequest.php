@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Http\Requests\Tasks;
+namespace App\Http\Requests\Sprint;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\User;
-use App\Models\Task;
+use App\Models\Sprint;
 
 class CreateRequest extends FormRequest
 {
@@ -15,7 +14,7 @@ class CreateRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('create', Task::class);
+        return $this->user()->can('create', Sprint::class);
     }
 
     /**
@@ -26,7 +25,7 @@ class CreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tasks|max:255',
+            'name' => 'required|max:255|string'
         ];
     }
 }

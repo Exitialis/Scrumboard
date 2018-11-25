@@ -28,11 +28,11 @@ class BaseException extends Exception
      * @param string $code
      * @param array $details
      */
-    public function __construct($message, int $statusCode, string $code, array $details)
+    public function __construct($message, int $statusCode = null, string $code = 'Exception', array $details = [])
     {
         $this->code = $code;
         $this->status = $statusCode;
-        $this->data = $data;
+        $this->data = $details;
 
         parent::__construct($message);
     }
@@ -41,15 +41,8 @@ class BaseException extends Exception
      * In Laravel 5.5, you can render your exceptions directly from the exception class
      * itself, allowing you to handle them they way you want to.
      */
-    public function render($request)
+    public function render()
     {
-        // if ($request->expectsJson()) {
-        //     return $this->handleAjax();
-        // }
-
-        // return redirect()->back()
-        //     ->withInput()
-        //     ->withErrors($this->getMessage());
         return $this->handleAjax();
     }
 
@@ -60,6 +53,7 @@ class BaseException extends Exception
     {
         return response()->json([
             'status' => $this->status,
+            'code' => $this->code,
             'error' => $this->getMessage(),
             'data' => $this->data
         ], $this->status);
