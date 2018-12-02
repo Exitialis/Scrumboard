@@ -1,16 +1,16 @@
-import router from './router';
-import Vue from 'vue';
-import axios from 'axios';
-import VueAxios from 'vue-axios';
-import App from './App.vue';
-
 try {
     window.$ = window.jQuery = require('jquery');
 
     require('bootstrap');
 } catch (e) { }
 
-axios.defaults.baseURL = 'http://scrum.test/api';
+import router from './router';
+import Vue from 'vue';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+import App from './App.vue';
+
+axios.defaults.baseURL = 'http://scrumboard.test/api';
 
 Vue.router = router;
 Vue.use(VueAxios, axios);

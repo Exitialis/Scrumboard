@@ -13,7 +13,6 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="{{ asset('js/vendor/onscreen.min.js') }}" defer></script>
     <script src="{{ asset('js/vendor/popper.min.js') }}" defer></script>
-    <script src="{{ asset('js/vendor/headroom.min.js') }}" defer></script>
     <script src="{{ asset('js/vendor/argon.min.js') }}" defer></script>
 
 
@@ -24,27 +23,8 @@
     <!-- Styles -->
     <link href="{{ mix('/css/app.css') }}" rel="stylesheet">
 </head>
-<body>
-    <div id="app">
+<body style="height: 100%;">
 
-
-
-        <main>
-            <section class="section section-shaped section-lg">
-                <div class="shape shape-style-1 auth-bg">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                @yield('content')
-            </section>
-        </main>
-    </div>
+    <div id="app" style="height: 100%;"></div>
 </body>
 </html>

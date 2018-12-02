@@ -4,44 +4,57 @@ import Router from 'vue-router'
 Vue.use(Router);
 
 const router = new Router({
-    mode: 'history',
-    routes: [
-        {
-            path: '/',
-            name: 'main',
-            component: require('../templates/main.vue'),
-            children: [
-                {
-                    path: '/auth/login',
-                    name: 'login',
-                    component: require('../pages/auth/login.vue')
-                },
-                // {
-                //     path: '/auth/register',
-                //     name: 'register',
-                //     component: require('../pages/auth/register').default
-                // },
-                // {
-                //     path: '/auth/logout',
-                //     name: 'logout',
-                //     component: require('../pages/auth/logout').default,
-                //     //beforeEnter: IsLoggedIn
-                // },
-                {
-                    meta: { auth: true },
-                    path: '/profile',
-                    name: 'profile',
-                    component: require('../pages/profile.vue'),
-                    //beforeEnter: IsLoggedIn
-                },
-            ]
+  mode: 'history',
+  routes: [{
+      path: '/',
+      name: 'main',
+      component: require('../templates/main.vue'),
+      children: [{
+          path: '/auth/',
+          name: 'auth',
+          component: require('../pages/auth/auth.vue'),
+          children: [{
+              meta: {
+                auth: false
+              },
+              path: 'login',
+              name: 'login',
+              component: require('../pages/auth/login.vue')
+            },
+            {
+              meta: {
+                auth: false
+              },
+              path: 'register',
+              name: 'register',
+              component: require('../pages/auth/register.vue')
+            },
+            {
+              meta: {
+                auth: true
+              },
+              path: '/auth/logout',
+              name: 'logout',
+              component: require('../pages/auth/logout.vue'),
+            },
+          ]
         },
         {
-            path: '*',
-            redirect: '/auth/login'
-        }
-    ],
-    linkActiveClass: "active"
+          meta: {
+            auth: true
+          },
+          path: '/board',
+          name: 'board',
+          component: require('../pages/scrumboard.vue'),
+        },
+      ]
+    },
+    {
+      path: '*',
+      redirect: '/auth/login'
+    }
+  ],
+  linkActiveClass: "active"
 });
 
 export default router;

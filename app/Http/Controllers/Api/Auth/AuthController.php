@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Exceptions\AuthenticationException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\Access\AuthorizationException;
+use App\Exceptions\ValidationException;
 
 class AuthController extends Controller
 {
@@ -32,7 +32,10 @@ class AuthController extends Controller
     {
         $credentials = $request->only('username', 'password');
         if (!$token = auth()->attempt($credentials)) {
-            throw new AuthorizationException('Неверный логин или пароль');
+            throw new ValidationException([
+                'username' => 'Неверный логин или пароль',
+                'password' => 'Неверный логин или пароль'
+            ]);
         }
 
         return response([

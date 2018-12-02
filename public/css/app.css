@@ -17006,6 +17006,18 @@ article h5 + figure {
   margin-top: 0;
 }
 
+.navbar {
+  padding: 0;
+}
+
+.navbar-transparent {
+  position: relative;
+}
+
+html {
+  height: 100%;
+}
+
 .datepicker {
   border-radius: 0.25rem;
   direction: ltr;
