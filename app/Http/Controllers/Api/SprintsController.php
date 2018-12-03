@@ -8,24 +8,24 @@ use App\Http\Requests\Sprint\CreateRequest;
 use App\Models\Sprint;
 use App\Http\Requests\Sprint\UpdateRequest;
 use App\Exceptions\BaseException;
+use App\Exceptions\ValidationException;
 
 class SprintsController extends Controller
 {
   public function lists(Request $request)
   {
-    if ($request->has('status')) {
-      if ($request->status === Sprint::STARTED) {
-        return Sprint::where('status', Sprint::STARTED)->first();
-      }
-
-      return Sprint::where('status', $request->status)->get();
-    }
-
-    return Sprint::paginate(10);
+    return response()->json([
+      'status' => 200,
+      'data' => Sprint::where('status', '!=', Sprint::FINISHED)->first() ? : null
+    ]);
   }
 
   public function create(CreateRequest $request)
   {
+    if (Sprint::where('status', Sprint::CREATED)->orWhere('status', Sprint::STARTED)->first()) {
+      throw new ValidationException(['name' => 'Может существовать только один спринт помимо завершенных']);
+    }
+
     $sprint = new Sprint();
     $sprint->name = $request->name;
     $sprint->date_start = $request->date_start ? : null;

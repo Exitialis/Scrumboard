@@ -32,6 +32,9 @@
               <li v-if="$auth.check()" class="nav-item">
                 <router-link class="nav-link" to="/board">Доска</router-link>
               </li>
+              <li v-if="$auth.check()" class="nav-item">
+                <router-link class="nav-link" to="/backlog">Бэклог</router-link>
+              </li>
               <li v-if="$auth.check()" class="nav-item dropdown">
                 <a
                   id="navbarDropdown"
@@ -41,13 +44,11 @@
                   data-toggle="dropdown"
                   aria-haspopup="true"
                   aria-expanded="false"
-                  v-pre
                 >
                   <i class="ni ni-single-02"></i>
-                  {{ user.username }}
+                  <span>{{ user.username }}</span>
                   <span class="caret"></span>
                 </a>
-
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <router-link class="dropdown-item" to="/auth/logout">Выйти</router-link>
                 </div>

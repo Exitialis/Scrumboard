@@ -3,7 +3,22 @@
     <div v-if="$auth.ready()" style="height: 100%;">
       <navbar></navbar>
       <main style="height: 100%;">
-        <router-view></router-view>
+        <section class="section section-shaped section-lg" style="height: 100%;">
+          <div class="shape shape-style-1 auth-bg">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div>
+            <router-view></router-view>
+          </div>
+        </section>
       </main>
     </div>
 
