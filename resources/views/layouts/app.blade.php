@@ -15,7 +15,6 @@
     <script src="{{ asset('js/vendor/popper.min.js') }}" defer></script>
     <script src="{{ asset('js/vendor/argon.min.js') }}" defer></script>
 
-
     <!-- Fonts -->
     <link href="{{ asset('css/vendor/nucleo.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/vendor/font-awesome.min.css') }}" rel="stylesheet" type="text/css">

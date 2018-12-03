@@ -38,6 +38,7 @@ class TasksController extends Controller
   public function update(Task $task, UpdateRequest $request)
   {
     $user = auth()->user();
+
     if ($user->isProductOwner()) {
       $task->name = $request->name ? : $task->name;
       $task->description = $request->description ? : $task->description;
@@ -54,7 +55,7 @@ class TasksController extends Controller
 
     if ($user->isScrumMaster()) {
       $task->executor = $request->executor ? : $task->executor;
-      $task->sprint = $request->sprint ? : $task->sprin;
+      $task->sprint = $request->sprint ? : $task->sprint;
       $task->status = $request->status;
       $task->save();
 

@@ -4,6 +4,7 @@
       <div class="card-header">
         <p v-if="sprint">Задачи в {{ sprint.name }}</p>
         <p v-else>Нет доступного спринта</p>
+        <a href="#" v-b-modal.newSprint class="text-muted">Создать?</a>
       </div>
       <ul class="list-group list-group-flush">
         <draggable v-model="sprintTasks" :options="{group:'tasks'}" style="min-height: 100%">
@@ -13,7 +14,21 @@
             :key="task.id"
           >
             <p>{{ task.name }}</p>
-            <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
+            <div class="d-flex wrap">
+              <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
+              <span class="badge badge-info badge-pill" v-if="task.status === 0">К ВЫПОЛНЕНИЮ</span>
+              <span class="badge badge-info badge-pill" v-if="task.status === 1">В РАБОТЕ</span>
+              <span class="badge badge-info badge-pill" v-if="task.status === 2">ТЕСТИРУЕТСЯ</span>
+              <span class="badge badge-info badge-pill" v-if="task.status === 3">ВЫПОЛНЕНА</span>
+              <span class="badge badge-success badge-pill" v-if="task.executor">
+                <i class="ni ni-single-02"></i>
+                {{ task.executor.username }}
+              </span>
+              <span class="badge badge-warning badge-pill" v-else>
+                <i class="ni ni-single-02"></i>
+                Не назначен
+              </span>
+            </div>
           </li>
         </draggable>
       </ul>
@@ -29,7 +44,21 @@
             :key="task.id"
           >
             <p>{{ task.name }}</p>
-            <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
+            <div>
+              <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
+              <span class="badge badge-info badge-pill" v-if="task.status === 0">К ВЫПОЛНЕНИЮ</span>
+              <span class="badge badge-info badge-pill" v-if="task.status === 1">В РАБОТЕ</span>
+              <span class="badge badge-info badge-pill" v-if="task.status === 2">ТЕСТИРУЕТСЯ</span>
+              <span class="badge badge-info badge-pill" v-if="task.status === 3">ВЫПОЛНЕНА</span>
+              <span class="badge badge-success badge-pill" v-if="task.executor">
+                <i class="ni ni-single-02"></i>
+                {{ task.executor.username }}
+              </span>
+              <span class="badge badge-warning badge-pill" v-else>
+                <i class="ni ni-single-02"></i>
+                Не назначен
+              </span>
+            </div>
           </li>
         </draggable>
       </ul>
@@ -46,7 +75,8 @@ export default {
   data() {
     return {
       sprint: null,
-      tasks: []
+      tasks: [],
+      sprintModal: false
     };
   },
   computed: {
@@ -59,7 +89,7 @@ export default {
         for (let i = 0; i < value.length; i++) {
           let task = value[i];
           if (!this.availableTasks.includes(task)) {
-            this.tasks[this.tasks.indexOf(task)].sprint = null;
+            task.sprint = null;
             this.updateTask(task);
           }
         }
@@ -77,7 +107,7 @@ export default {
         for (let i = 0; i < value.length; i++) {
           let task = value[i];
           if (!this.sprintTasks.includes(task)) {
-            this.tasks[this.tasks.indexOf(task)].sprint = this.sprint.id;
+            task.sprint = this.sprint.id;
             this.updateTask(task);
           }
         }
@@ -103,7 +133,13 @@ export default {
         })
         .then(res => {
           console.log(res);
+        })
+        .catch(err => {
+          task.sprint = task.sprint ? null : this.sprint.id;
         });
+    },
+    onMove({ relatedContext, draggedContext }) {
+      return this.$user().ugroup === 1;
     }
   },
   created() {
@@ -116,6 +152,9 @@ export default {
 <style>
 .backlog .card {
   margin-top: 15px;
+}
+.backlog .badge {
+  min-width: 109px;
 }
 .backlog .list-group-item {
   cursor: move;

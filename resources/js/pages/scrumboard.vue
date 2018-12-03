@@ -67,7 +67,8 @@ export default {
   },
   data() {
     return {
-      tasks: []
+      tasks: [],
+      sprint: null
     };
   },
   computed: {
@@ -137,18 +138,25 @@ export default {
     }
   },
   methods: {
-    getTasks() {
-      this.$http.get("task").then(res => {
+    loadBoard() {
+      this.getSprint().then(() => {
+        if (this.sprint) {
+          this.getTasks(this.sprint.id);
+        }
+      });
+    },
+    getTasks(sprint) {
+      return this.$http.get("task?sprint=" + sprint).then(res => {
         this.tasks = res.data.data;
       });
     },
     getSprint() {
-      this.$http.get("sprint?status=1").then(res => {
-        console.log(res);
+      return this.$http.get("sprint?status=1").then(res => {
+        this.sprint = res.data.data;
       });
     },
     updateTask(task) {
-      this.$http
+      return this.$http
         .put("task/" + task.id, {
           status: task.status
         })
@@ -161,7 +169,7 @@ export default {
     }
   },
   created() {
-    this.getTasks();
+    this.loadBoard();
   }
 };
 </script>
@@ -169,11 +177,12 @@ export default {
 <style>
 .board {
   display: flex;
-  padding: 15px;
   justify-content: space-between;
   flex-wrap: nowrap;
   align-items: stretch;
   overflow-x: auto;
+  padding: 15px;
+  height: 100%;
 }
 .board-col {
   flex: 1;
