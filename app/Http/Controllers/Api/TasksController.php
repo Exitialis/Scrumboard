@@ -13,14 +13,17 @@ class TasksController extends Controller
 {
   public function lists(ListsTasksRequest $request)
   {
-    $task;
+    $task = Task::with('executor');
     if ($request->has('sprint')) {
-      $task = Task::where('sprint', $request->sprint);
+      $task = $task->where('sprint', $request->sprint);
     } else {
-      $task = Task::with('sprint')->whereRaw('(sprint is null and status <> 3) or sprint is not null');
+      $task = $task->whereRaw('(sprint is null and status <> 3) or sprint is not null');
     }
 
-    return $task->get();
+    return response()->json([
+      'status' => 200,
+      'data' => $task->get()
+    ]);
   }
 
   public function create(CreateRequest $request)
@@ -40,7 +43,7 @@ class TasksController extends Controller
       $task->description = $request->description ? : $task->description;
       $task->status = $request->status ? : $task->status;
       $task->executor = $request->executor ? : $task->executor;
-      $task->sprint = $request->sprint ? : $task->sprin;
+      $task->sprint = $request->sprint ? : $task->sprint;
       $task->save();
 
       return response()->json([
