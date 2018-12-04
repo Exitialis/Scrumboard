@@ -4,10 +4,11 @@
       <div class="card-header">
         <p v-if="sprint">Задачи в {{ sprint.name }}</p>
         <p v-else>Нет доступного спринта</p>
-        <a href="#" v-b-modal.newSprint class="text-muted">Создать?</a>
+        <a v-if="!sprint" href="#" v-b-modal.newSprint class="text-muted">Создать?</a>
       </div>
+
       <ul class="list-group list-group-flush">
-        <draggable v-model="sprintTasks" :options="{group:'tasks'}" style="min-height: 100%">
+        <draggable v-model="sprintTasks" :options="{group:'tasks'}" style="min-height: 50px">
           <li
             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             v-for="task in sprintTasks"
@@ -37,7 +38,7 @@
     <div class="card">
       <div class="card-header">Все задачи</div>
       <ul class="list-group list-group-flush">
-        <draggable v-model="availableTasks" :options="{group:'tasks'}" style="min-height: 100%">
+        <draggable v-model="availableTasks" :options="{group:'tasks'}" style="min-height: 50px">
           <li
             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
             v-for="task in availableTasks"
@@ -126,9 +127,10 @@ export default {
       });
     },
     updateTask(task) {
+      console.log(task);
       this.$http
         .put("task/" + task.id, {
-          sprint: this.sprint.id,
+          sprint: task.sprint ? task.sprint : null,
           status: task.status
         })
         .then(res => {

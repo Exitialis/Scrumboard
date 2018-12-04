@@ -42,9 +42,9 @@ class TasksController extends Controller
     if ($user->isProductOwner()) {
       $task->name = $request->name ? : $task->name;
       $task->description = $request->description ? : $task->description;
-      $task->status = $request->status ? : $task->status;
+      $task->status = $request->has('status') ? $request->status : $task->status;
       $task->executor = $request->executor ? : $task->executor;
-      $task->sprint = $request->sprint ? : $task->sprint;
+      $task->sprint = $request->has('sprint') ? $request->sprint : $task->sprint;
       $task->save();
 
       return response()->json([

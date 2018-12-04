@@ -15,7 +15,7 @@ class UpdateRequest extends FormRequest
    */
   public function authorize()
   {
-    if ($this->request->has('sprint')) {
+    if ($this->request->has('sprint') && !$this->user()->isProductOwner()) {
       throw new AuthorizationException('У вас недостаточно прав для добавления задач в спринт');
     }
     return true;
@@ -33,7 +33,7 @@ class UpdateRequest extends FormRequest
       'description' => 'string',
       'status' => 'in:0,1,2,3' . $this->user()->isMember() ? '|required' : '',
       'executor' => 'exists:users,id',
-      'sprint' => 'exists:sprints,id'
+      'sprint' => 'exists:sprints,id|nullable'
     ];
   }
 }

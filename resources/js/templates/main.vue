@@ -16,12 +16,12 @@
             <span></span>
             <span></span>
           </div>
-          <create-sprint></create-sprint>
           <div style="height: 100%">
             <router-view></router-view>
           </div>
         </section>
       </main>
+      <create-sprint></create-sprint>
     </div>
 
     <div v-if="!$auth.ready()">

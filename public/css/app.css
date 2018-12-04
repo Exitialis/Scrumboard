@@ -17018,6 +17018,11 @@ html {
   height: 100%;
 }
 
+.mx-calendar-content {
+  width: auto !important;
+  height: auto !important;
+}
+
 .datepicker {
   border-radius: 0.25rem;
   direction: ltr;

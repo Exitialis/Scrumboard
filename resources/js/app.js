@@ -45,7 +45,7 @@ axios.interceptors.response.use(function (response) {
 }, function (error) {
   console.log(error.response);
   if (error.response.status === 422) {
-    $vm.$snotify.error('При заполнении данных формы произошла ошибка')
+    $vm.$snotify.error(error.response.data.error);
   } else if (error.response.status === 403) {
     $vm.$snotify.error(error.response.data.error);
   }

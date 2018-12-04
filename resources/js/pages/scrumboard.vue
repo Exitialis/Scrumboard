@@ -1,69 +1,68 @@
 <template>
   <div class="board">
-    <div class="board-col">
-      <div class="header">К ВЫПОЛНЕНИЮ</div>
-      <div class="content">
-        <draggable v-model="createdTasks" :options="{group:'tasks'}" style="min-height: 100%">
-          <div class="task" v-for="(task, index) in createdTasks" :key="index">
-            <div class="header">
-              <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
-              <p class="text-muted executor">{{ task.executor }}</p>
-            </div>
-            <div class="name">{{ task.name }}</div>
-          </div>
-        </draggable>
+    <div class="header" v-if="sprint">
+      <h3>Спринт {{ sprint.name }}</h3>
+      <div>
+        <span>
+          <i class="ni ni-time-alarm"></i>
+          Дней осталось: {{ daysUntilFinish }}
+        </span>
+        <a href="#" @click.prevent="finishSprint" class="btn btn-primary ml-2">Завершить спринт</a>
       </div>
     </div>
-    <div class="board-col">
-      <div class="header">В РАБОТЕ</div>
-      <div class="content">
-        <draggable v-model="performedTasks" :options="{group:'tasks'}" style="min-height: 100%">
-          <div class="task" v-for="(task, index) in performedTasks" :key="index">
-            <div class="header">
-              <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
-              <p class="text-muted executor">{{ task.executor }}</p>
-            </div>
-            <div class="name">{{ task.name }}</div>
-          </div>
-        </draggable>
+    <div class="board-row" v-if="sprint">
+      <div class="board-col">
+        <div class="header">К ВЫПОЛНЕНИЮ</div>
+        <div class="content">
+          <draggable v-model="createdTasks" :options="{group:'tasks'}" style="min-height: 100%">
+            <boardTask v-for="(task, index) in createdTasks" :key="index" :task="task"></boardTask>
+          </draggable>
+        </div>
+      </div>
+      <div class="board-col">
+        <div class="header">В РАБОТЕ</div>
+        <div class="content">
+          <draggable v-model="performedTasks" :options="{group:'tasks'}" style="min-height: 100%">
+            <boardTask v-for="(task, index) in performedTasks" :key="index" :task="task"></boardTask>
+          </draggable>
+        </div>
+      </div>
+      <div class="board-col">
+        <div class="header">ТЕСТИРУЕТСЯ</div>
+        <div class="content">
+          <draggable v-model="tasksInTesting" :options="{group:'tasks'}" style="min-height: 100%">
+            <boardTask v-for="(task, index) in tasksInTesting" :key="index" :task="task"></boardTask>
+          </draggable>
+        </div>
+      </div>
+      <div class="board-col">
+        <div class="header">ГОТОВО</div>
+        <div class="content">
+          <draggable v-model="doneTasks" :options="{group:'tasks'}" style="min-height: 100%">
+            <boardTask v-for="(task, index) in doneTasks" :key="index" :task="task"></boardTask>
+          </draggable>
+        </div>
       </div>
     </div>
-    <div class="board-col">
-      <div class="header">ТЕСТИРУЕТСЯ</div>
-      <div class="content">
-        <draggable v-model="tasksInTesting" :options="{group:'tasks'}" style="min-height: 100%">
-          <div class="task" v-for="(task, index) in tasksInTesting" :key="index">
-            <div class="header">
-              <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
-              <p class="text-muted executor">{{ task.executor }}</p>
-            </div>
-            <div class="name">{{ task.name }}</div>
-          </div>
-        </draggable>
+    <div class="card">
+      <div class="card-header">
+        <h3>Спринт не найден</h3>
       </div>
-    </div>
-    <div class="board-col">
-      <div class="header">ГОТОВО</div>
-      <div class="content">
-        <draggable v-model="doneTasks" :options="{group:'tasks'}" style="min-height: 100%">
-          <div class="task" v-for="(task, index) in doneTasks" :key="index">
-            <div class="header">
-              <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
-              <p class="text-muted executor">{{ task.executor }}</p>
-            </div>
-            <div class="name">{{ task.name }}</div>
-          </div>
-        </draggable>
+      <div class="card-body">
+        <p>Для начала, необходимо запланировать спринт</p>
       </div>
+      <div class="card-footer"></div>
     </div>
   </div>
 </template>
 
 <script>
 import draggable from "vuedraggable";
+import boardTask from "../components/boardTask";
 export default {
   components: {
-    draggable
+    draggable,
+    boardTask
   },
   data() {
     return {
@@ -135,6 +134,14 @@ export default {
           }
         }
       }
+    },
+    daysUntilFinish() {
+      if (!this.sprint) return null;
+      if (!this.sprint.date_finish) return null;
+      return Math.round(
+        (new Date(this.sprint.date_finish).getTime() - new Date().getTime()) /
+          (1000 * 60 * 60 * 24)
+      );
     }
   },
   methods: {
@@ -166,6 +173,12 @@ export default {
           });
           this.tasks[index] = res.data.data;
         });
+    },
+    finishSprint() {
+      this.sprint.status = 2;
+      this.$http.put("sprint/" + this.sprint.id, this.sprint).then(() => {
+        this.loadBoard();
+      });
     }
   },
   created() {
@@ -177,12 +190,37 @@ export default {
 <style>
 .board {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  padding: 15px;
+}
+.board > .header {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 30px;
+  color: #fff;
+}
+.board > .header > h3 {
+  color: #fff;
+}
+.board-row {
+  display: flex;
   justify-content: space-between;
   flex-wrap: nowrap;
   align-items: stretch;
   overflow-x: auto;
-  padding: 15px;
+  width: 100%;
   height: 100%;
+}
+.board-col:first-child {
+  margin-left: 0;
+}
+.board-col:last-child {
+  margin-right: 0;
 }
 .board-col {
   flex: 1;
@@ -199,25 +237,6 @@ export default {
 .board-col .content {
   background-color: #f4f5f7;
   height: 100%;
-}
-
-.task {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 5px;
-  padding: 10px;
-  background-color: #fff;
-  box-shadow: 0px 1px 2px 0px rgba(9, 30, 66, 0.25);
-  border: 0;
-  border-radius: 2px;
-  color: #333;
-  cursor: move;
-}
-
-.task .header {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
 }
 </style>
 
