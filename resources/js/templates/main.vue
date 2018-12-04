@@ -16,17 +16,11 @@
             <span></span>
             <span></span>
           </div>
+          <create-sprint></create-sprint>
           <div style="height: 100%">
             <router-view></router-view>
           </div>
         </section>
-        <b-modal id="newSprint" title="Создание нового спринта">
-          <div class="input-daterange datepicker row align-items-center">
-            <div class="col">
-              <date-picker lang="ru" v-model="dateStart" type="date"></date-picker>
-            </div>
-          </div>
-        </b-modal>
       </main>
     </div>
 
@@ -37,15 +31,10 @@
 </template>
 
 <script>
-import DatePicker from "vue2-datepicker";
 import navbar from "../components/navbar";
+import createSprint from "../components/createSprint";
 export default {
-  data() {
-    return {
-      dateStart: ""
-    };
-  },
-  components: { navbar, DatePicker }
+  components: { navbar, createSprint }
 };
 </script>
 
