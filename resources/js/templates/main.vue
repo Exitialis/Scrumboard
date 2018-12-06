@@ -21,9 +21,8 @@
           </div>
         </section>
       </main>
-      <create-sprint></create-sprint>
     </div>
-
+    <task-modal></task-modal>
     <div v-if="!$auth.ready()">
       <div style="text-align:center; padding-top:50px;">Loading site...</div>
     </div>
@@ -32,9 +31,9 @@
 
 <script>
 import navbar from "../components/navbar";
-import createSprint from "../components/createSprint";
+import taskModal from "../components/taskModal";
 export default {
-  components: { navbar, createSprint }
+  components: { navbar, taskModal }
 };
 </script>
 

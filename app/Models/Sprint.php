@@ -14,6 +14,11 @@ class Sprint extends Model
 
   protected $visible = ['id', 'name', 'date_start', 'date_finish', 'status'];
 
+  public function scopeCurrent($query)
+  {
+    return $query->where('status', Sprint::STARTED)->orWhere('status', Sprint::CREATED);
+  }
+
   public function isCreated()
   {
     return $this->status === self::CREATED;

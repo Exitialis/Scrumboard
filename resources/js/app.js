@@ -12,6 +12,7 @@ import App from './App.vue';
 import Snotify, { SnotifyPosition } from 'vue-snotify'
 import bModal from 'bootstrap-vue/es/components/modal/modal'
 import bModalDirective from 'bootstrap-vue/es/directives/modal/modal'
+import store from './store';
 
 axios.defaults.baseURL = 'http://scrum.test/api';
 
@@ -37,6 +38,7 @@ Vue.directive('b-modal', bModalDirective);
 let $vm = new Vue({
   components: { App },
   router,
+  store,
   template: '<App/>'
 }).$mount('#app')
 

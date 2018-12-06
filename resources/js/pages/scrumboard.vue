@@ -1,57 +1,65 @@
 <template>
-  <div class="board">
-    <div class="header" v-if="sprint">
-      <h3>Спринт {{ sprint.name }}</h3>
-      <div>
-        <span>
-          <i class="ni ni-time-alarm"></i>
-          Дней осталось: {{ daysUntilFinish }}
-        </span>
-        <a href="#" @click.prevent="finishSprint" class="btn btn-primary ml-2">Завершить спринт</a>
+  <div style="height: 100%">
+    <div class="board" v-if="sprint">
+      <div class="header">
+        <h3>Спринт {{ sprint.name }}</h3>
+        <div>
+          <span>
+            <i class="ni ni-time-alarm"></i>
+            Дней осталось: {{ daysUntilFinish }}
+          </span>
+          <a href="#" @click.prevent="finishSprint" class="btn btn-primary ml-2">Завершить спринт</a>
+        </div>
+      </div>
+      <div class="board-row" v-if="sprint">
+        <div class="board-col">
+          <div class="header">К ВЫПОЛНЕНИЮ</div>
+          <div class="content">
+            <draggable v-model="createdTasks" :options="{group:'tasks'}" style="min-height: 100%">
+              <boardTask v-for="(task, index) in createdTasks" :key="index" :task="task"></boardTask>
+            </draggable>
+          </div>
+        </div>
+        <div class="board-col">
+          <div class="header">В РАБОТЕ</div>
+          <div class="content">
+            <draggable v-model="performedTasks" :options="{group:'tasks'}" style="min-height: 100%">
+              <boardTask v-for="(task, index) in performedTasks" :key="index" :task="task"></boardTask>
+            </draggable>
+          </div>
+        </div>
+        <div class="board-col">
+          <div class="header">ТЕСТИРУЕТСЯ</div>
+          <div class="content">
+            <draggable v-model="tasksInTesting" :options="{group:'tasks'}" style="min-height: 100%">
+              <boardTask v-for="(task, index) in tasksInTesting" :key="index" :task="task"></boardTask>
+            </draggable>
+          </div>
+        </div>
+        <div class="board-col">
+          <div class="header">ГОТОВО</div>
+          <div class="content">
+            <draggable v-model="doneTasks" :options="{group:'tasks'}" style="min-height: 100%">
+              <boardTask v-for="(task, index) in doneTasks" :key="index" :task="task"></boardTask>
+            </draggable>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="board-row" v-if="sprint">
-      <div class="board-col">
-        <div class="header">К ВЫПОЛНЕНИЮ</div>
-        <div class="content">
-          <draggable v-model="createdTasks" :options="{group:'tasks'}" style="min-height: 100%">
-            <boardTask v-for="(task, index) in createdTasks" :key="index" :task="task"></boardTask>
-          </draggable>
+    <div v-else class="row justify-content-center">
+      <div class="col-lg-5">
+        <div class="card">
+          <div class="card-header">
+            <h3>Спринт не найден</h3>
+          </div>
+          <div class="card-body">
+            <p>Для начала, необходимо запланировать спринт</p>
+          </div>
+          <div class="card-footer">
+            <router-link to="/backlog" class="btn btn-primary">Запланировать</router-link>
+          </div>
         </div>
       </div>
-      <div class="board-col">
-        <div class="header">В РАБОТЕ</div>
-        <div class="content">
-          <draggable v-model="performedTasks" :options="{group:'tasks'}" style="min-height: 100%">
-            <boardTask v-for="(task, index) in performedTasks" :key="index" :task="task"></boardTask>
-          </draggable>
-        </div>
-      </div>
-      <div class="board-col">
-        <div class="header">ТЕСТИРУЕТСЯ</div>
-        <div class="content">
-          <draggable v-model="tasksInTesting" :options="{group:'tasks'}" style="min-height: 100%">
-            <boardTask v-for="(task, index) in tasksInTesting" :key="index" :task="task"></boardTask>
-          </draggable>
-        </div>
-      </div>
-      <div class="board-col">
-        <div class="header">ГОТОВО</div>
-        <div class="content">
-          <draggable v-model="doneTasks" :options="{group:'tasks'}" style="min-height: 100%">
-            <boardTask v-for="(task, index) in doneTasks" :key="index" :task="task"></boardTask>
-          </draggable>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <h3>Спринт не найден</h3>
-      </div>
-      <div class="card-body">
-        <p>Для начала, необходимо запланировать спринт</p>
-      </div>
-      <div class="card-footer"></div>
     </div>
   </div>
 </template>
@@ -65,12 +73,15 @@ export default {
     boardTask
   },
   data() {
-    return {
-      tasks: [],
-      sprint: null
-    };
+    return {};
   },
   computed: {
+    tasks() {
+      return this.$store.getters["tasks/boardTasks"];
+    },
+    sprint() {
+      return this.$store.state.tasks.sprint;
+    },
     createdTasks: {
       get() {
         return this.tasks.filter(task => task.status === 0);
@@ -80,8 +91,7 @@ export default {
         for (let i = 0; i < value.length; i++) {
           let task = value[i];
           if (!this.createdTasks.includes(task)) {
-            task.status = 0;
-            this.updateTask(task);
+            this.updateTask(task, 0);
             return;
           }
         }
@@ -96,8 +106,7 @@ export default {
         for (let i = 0; i < value.length; i++) {
           let task = value[i];
           if (!this.performedTasks.includes(task)) {
-            task.status = 1;
-            this.updateTask(task);
+            this.updateTask(task, 1);
             return;
           }
         }
@@ -112,8 +121,7 @@ export default {
         for (let i = 0; i < value.length; i++) {
           let task = value[i];
           if (!this.tasksInTesting.includes(task)) {
-            task.status = 2;
-            this.updateTask(task);
+            this.updateTask(task, 2);
             return;
           }
         }
@@ -128,8 +136,7 @@ export default {
         for (let i = 0; i < value.length; i++) {
           let task = value[i];
           if (!this.doneTasks.includes(task)) {
-            task.status = 3;
-            this.updateTask(task);
+            this.updateTask(task, 3);
             return;
           }
         }
@@ -154,24 +161,25 @@ export default {
     },
     getTasks(sprint) {
       return this.$http.get("task?sprint=" + sprint).then(res => {
-        this.tasks = res.data.data;
+        this.$store.commit("tasks/setTasks", res.data.data);
       });
     },
     getSprint() {
       return this.$http.get("sprint?status=1").then(res => {
-        this.sprint = res.data.data;
+        this.$store.commit("tasks/setSprint", res.data.data);
       });
     },
-    updateTask(task) {
+    updateTask(task, status) {
+      this.$store.commit("tasks/setTaskStatus", {
+        task,
+        status
+      });
       return this.$http
         .put("task/" + task.id, {
-          status: task.status
+          status
         })
         .then(res => {
-          let index = this.tasks.findIndex(task => {
-            task.id === res.data.data.id;
-          });
-          this.tasks[index] = res.data.data;
+          this.$store.commit("tasks/updateTask", res.data.data);
         });
     },
     finishSprint() {

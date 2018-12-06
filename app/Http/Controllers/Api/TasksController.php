@@ -8,16 +8,21 @@ use App\Http\Requests\Tasks\CreateRequest;
 use App\Models\Task;
 use App\Http\Requests\Task\UpdateRequest;
 use App\Http\Requests\Tasks\ListsTasksRequest;
+use App\Models\Sprint;
 
 class TasksController extends Controller
 {
   public function lists(ListsTasksRequest $request)
   {
     $task = Task::with('executor');
+    $sprint = Sprint::current()->first();
     if ($request->has('sprint')) {
       $task = $task->where('sprint', $request->sprint);
     } else {
-      $task = $task->whereRaw('(sprint is null and status <> 3) or sprint is not null');
+      $task = $task->where('status', '!=', Task::DONE);
+      if ($sprint) {
+        $task->orWhere('sprint', $sprint->id);
+      }
     }
 
     return response()->json([

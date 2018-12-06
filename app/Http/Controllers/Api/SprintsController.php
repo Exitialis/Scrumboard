@@ -72,7 +72,7 @@ class SprintsController extends Controller
 
     if ($request->status === Sprint::FINISHED) {
       if ($sprint->date_start) {
-        $sprint->status === Sprint::FINISHED;
+        $sprint->status = Sprint::FINISHED;
         $sprint->save();
 
         return response()->json([

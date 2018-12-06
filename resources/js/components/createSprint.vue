@@ -66,10 +66,17 @@ export default {
       if (this.dateEnd) {
         requestData.date_finish = this.dateEnd;
       }
+      this.errors = {};
       this.$http
         .post("sprint", requestData)
-        .then(res => {})
+        .then(res => {
+          this.$store.commit("tasks/setSprint", res.data.data);
+          this.errors = {};
+          this.$snotify.success("Спринт успешно создан");
+          this.$root.$emit("bv::hide::modal", "newSprint");
+        })
         .catch(err => {
+          console.error(err);
           if (err.response.status === 422) {
             this.errors = err.response.data.data;
           }

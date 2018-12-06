@@ -7,7 +7,7 @@
         <a v-if="!sprint" href="#" v-b-modal.newSprint class="text-muted">Создать?</a>
       </div>
 
-      <ul class="list-group list-group-flush">
+      <ul class="list-group list-group-flush" v-if="sprint">
         <draggable v-model="sprintTasks" :options="{group:'tasks'}" style="min-height: 50px">
           <li
             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
@@ -40,58 +40,76 @@
       <ul class="list-group list-group-flush">
         <draggable v-model="availableTasks" :options="{group:'tasks'}" style="min-height: 50px">
           <li
-            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            class="list-group-item list-group-item-action"
             v-for="task in availableTasks"
             :key="task.id"
           >
-            <p>{{ task.name }}</p>
-            <div>
-              <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
-              <span class="badge badge-info badge-pill" v-if="task.status === 0">К ВЫПОЛНЕНИЮ</span>
-              <span class="badge badge-info badge-pill" v-if="task.status === 1">В РАБОТЕ</span>
-              <span class="badge badge-info badge-pill" v-if="task.status === 2">ТЕСТИРУЕТСЯ</span>
-              <span class="badge badge-info badge-pill" v-if="task.status === 3">ВЫПОЛНЕНА</span>
-              <span class="badge badge-success badge-pill" v-if="task.executor">
-                <i class="ni ni-single-02"></i>
-                {{ task.executor.username }}
-              </span>
-              <span class="badge badge-warning badge-pill" v-else>
-                <i class="ni ni-single-02"></i>
-                Не назначен
-              </span>
-            </div>
+            <a
+              href="#"
+              class="d-flex justify-content-between align-items-center"
+              @click.prevent="$store.commit('tasks/setCurrent', task)"
+              v-b-modal.taskModal
+            >
+              <p>{{ task.name }}</p>
+              <div>
+                <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
+                <span class="badge badge-info badge-pill" v-if="task.status === 0">К ВЫПОЛНЕНИЮ</span>
+                <span class="badge badge-info badge-pill" v-if="task.status === 1">В РАБОТЕ</span>
+                <span class="badge badge-info badge-pill" v-if="task.status === 2">ТЕСТИРУЕТСЯ</span>
+                <span class="badge badge-info badge-pill" v-if="task.status === 3">ВЫПОЛНЕНА</span>
+                <span class="badge badge-success badge-pill" v-if="task.executor">
+                  <i class="ni ni-single-02"></i>
+                  {{ task.executor.username }}
+                </span>
+                <span class="badge badge-warning badge-pill" v-else>
+                  <i class="ni ni-single-02"></i>
+                  Не назначен
+                </span>
+              </div>
+            </a>
           </li>
         </draggable>
       </ul>
     </div>
+    <create-sprint @created="getSprint"></create-sprint>
   </div>
 </template>
 
 <script>
 import draggable from "vuedraggable";
+import createSprint from "../components/createSprint";
 export default {
   components: {
-    draggable
+    draggable,
+    createSprint
   },
   data() {
     return {
-      sprint: null,
-      tasks: [],
       sprintModal: false
     };
   },
   computed: {
+    tasks() {
+      return this.$store.state.tasks.tasks;
+    },
+    sprint() {
+      return this.$store.state.tasks.sprint;
+    },
     availableTasks: {
       get() {
-        return this.tasks.filter(task => task.sprint === null);
+        return this.tasks.filter(task => {
+          if (this.sprint) {
+            return task.sprint !== this.sprint.id;
+          }
+          return task.status !== 3;
+        });
       },
       set(value) {
         if (this.availableTasks.length > value.length) return;
         for (let i = 0; i < value.length; i++) {
           let task = value[i];
           if (!this.availableTasks.includes(task)) {
-            task.sprint = null;
-            this.updateTask(task);
+            this.updateTask(task, null);
           }
         }
       }
@@ -108,8 +126,7 @@ export default {
         for (let i = 0; i < value.length; i++) {
           let task = value[i];
           if (!this.sprintTasks.includes(task)) {
-            task.sprint = this.sprint.id;
-            this.updateTask(task);
+            this.updateTask(task, this.sprint.id);
           }
         }
       }
@@ -118,35 +135,38 @@ export default {
   methods: {
     getTasks() {
       this.$http.get("task").then(res => {
-        this.tasks = res.data.data;
+        this.$store.commit("tasks/setTasks", res.data.data);
       });
     },
     getSprint() {
       this.$http.get("sprint").then(res => {
-        this.sprint = res.data.data;
+        this.$store.commit("tasks/setSprint", res.data.data);
       });
     },
-    updateTask(task) {
-      console.log(task);
+    updateTask(task, sprint) {
+      this.$store.commit("tasks/setTaskSprint", {
+        task,
+        sprint: sprint
+      });
       this.$http
         .put("task/" + task.id, {
-          sprint: task.sprint ? task.sprint : null,
+          sprint,
           status: task.status
         })
         .then(res => {
-          console.log(res);
+          this.$store.commit("tasks/updateTask", res.data.data);
         })
         .catch(err => {
           task.sprint = task.sprint ? null : this.sprint.id;
         });
     },
-    onMove({ relatedContext, draggedContext }) {
-      return this.$user().ugroup === 1;
+    reload() {
+      this.getSprint();
+      this.getTasks();
     }
   },
   created() {
-    this.getSprint();
-    this.getTasks();
+    this.reload();
   }
 };
 </script>
