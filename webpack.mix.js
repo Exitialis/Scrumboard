@@ -11,9 +11,19 @@ const mix = require('laravel-mix');
  |
  */
 
+
 mix.js('resources/js/app.js', 'public/js')
-    .sass('resources/sass/app.scss', 'public/css');
+  .sass('resources/sass/app.scss', 'public/css');
+
+if (process.env.npm_lifecycle_event !== 'hot') {
+  mix.version()
+}
+
+mix.options({
+  hmrOptions: {
+    host: process.env.MIX_APP_URL,
+    port: 8080
+  }
+});
 
 //mix.disableNotifications();
-
-mix.version();

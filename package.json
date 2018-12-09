@@ -18,6 +18,8 @@
     "babel-plugin-transform-vue-jsx": "^3.7.0",
     "bootstrap": "^4.0.0",
     "bootstrap-vue": "^2.0.0-rc.11",
+    "browser-sync": "^2.26.3",
+    "browser-sync-webpack-plugin": "^2.0.1",
     "cross-env": "^5.1",
     "fecha": "^3.0.2",
     "jquery": "^3.2",
@@ -33,5 +35,7 @@
     "vuedraggable": "^2.17.0",
     "vuex": "^3.0.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "vue-click-outside": "^1.0.7"
+  }
 }

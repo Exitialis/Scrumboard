@@ -1,20 +1,23 @@
-try {
-  window.$ = window.jQuery = require('jquery');
+// try {
+//   window.$ = window.jQuery = require('jquery');
 
-  require('bootstrap');
-} catch (e) { }
+//   require('bootstrap');
+// } catch (e) {}
 
 import router from './router';
 import Vue from 'vue';
+import _ from './plugins';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import App from './App.vue';
-import Snotify, { SnotifyPosition } from 'vue-snotify'
+import Snotify, {
+  SnotifyPosition
+} from 'vue-snotify'
 import bModal from 'bootstrap-vue/es/components/modal/modal'
 import bModalDirective from 'bootstrap-vue/es/directives/modal/modal'
 import store from './store';
 
-axios.defaults.baseURL = 'http://scrum.test/api';
+axios.defaults.baseURL = window.location.origin + '/api';
 
 Vue.router = router;
 Vue.use(VueAxios, axios);
@@ -23,7 +26,9 @@ Vue.use(require('@websanova/vue-auth'), {
   auth: require('@websanova/vue-auth/drivers/auth/bearer.js'),
   http: require('@websanova/vue-auth/drivers/http/axios.1.x.js'),
   router: require('@websanova/vue-auth/drivers/router/vue-router.2.x.js'),
-  fetchData: { url: 'auth/me' }
+  fetchData: {
+    url: 'auth/me'
+  }
 });
 
 Vue.use(Snotify, {
@@ -36,7 +41,9 @@ Vue.component('b-modal', bModal);
 Vue.directive('b-modal', bModalDirective);
 
 let $vm = new Vue({
-  components: { App },
+  components: {
+    App
+  },
   router,
   store,
   template: '<App/>'
