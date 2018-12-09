@@ -12,70 +12,87 @@ use App\Models\Sprint;
 
 class TasksController extends Controller
 {
-  public function lists(ListsTasksRequest $request)
-  {
-    $task = Task::with('executor');
-    $sprint = Sprint::current()->first();
-    if ($request->has('sprint')) {
-      $task = $task->where('sprint', $request->sprint);
-    } else {
-      $task = $task->where('status', '!=', Task::DONE);
-      if ($sprint) {
-        $task->orWhere('sprint', $sprint->id);
-      }
+    public function lists(ListsTasksRequest $request)
+    {
+        $task = Task::with('executor');
+        $sprint = Sprint::current()->first();
+        if ($request->has('sprint')) {
+            $task = $task->where('sprint', $request->sprint);
+        } else {
+            $task = $task->where('status', '!=', Task::DONE);
+            if ($sprint) {
+                $task->orWhere('sprint', $sprint->id);
+            }
+        }
+
+        return response()->json([
+            'status' => 200,
+            'data' => $task->get()
+        ]);
     }
 
-    return response()->json([
-      'status' => 200,
-      'data' => $task->get()
-    ]);
-  }
+  // public function get(Task $task)
+  // {
 
-  public function create(CreateRequest $request)
-  {
-    return response()->json(Task::create([
-      'name' => $request->input('name'),
-      'description' => $request->input('description') ? : null,
-      'creator' => $request->user()->id
-    ]));
-  }
 
-  public function update(Task $task, UpdateRequest $request)
-  {
-    $user = auth()->user();
+  //   return response()->json([
+  //     'status' => 200,
+  //     'data' => $task
+  //   ])
+  // }
 
-    if ($user->isProductOwner()) {
-      $task->name = $request->name ? : $task->name;
-      $task->description = $request->description ? : $task->description;
-      $task->status = $request->has('status') ? $request->status : $task->status;
-      $task->executor = $request->executor ? : $task->executor;
-      $task->sprint = $request->has('sprint') ? $request->sprint : $task->sprint;
-      $task->save();
+    public function create(CreateRequest $request)
+    {
+        $task = Task::create([
+            'name' => $request->input('name'),
+            'description' => $request->input('description') ? : null,
+            'executor' => $request->input('executor') ? : null,
+            'creator' => $request->user()->id
+        ]);
 
-      return response()->json([
-        'status' => 200,
-        'data' => $task
-      ]);
+        $task->load('executor');
+        return response()->json([
+            'status' => 201,
+            'data' => $task
+        ]);
     }
 
-    if ($user->isScrumMaster()) {
-      $task->executor = $request->executor ? : $task->executor;
-      $task->sprint = $request->sprint ? : $task->sprint;
-      $task->status = $request->status;
-      $task->save();
+    public function update(Task $task, UpdateRequest $request)
+    {
+        $user = auth()->user();
 
-      return response()->json([
-        'status' => 200,
-        'data' => $task
-      ]);
+        if ($user->isProductOwner()) {
+            $task->name = $request->name ? : $task->name;
+            $task->description = $request->description ? : $task->description;
+            $task->status = $request->has('status') ? $request->status : $task->status;
+            $task->executor = $request->executor ? : $task->executor;
+            $task->sprint = $request->has('sprint') ? $request->sprint : $task->sprint;
+            $task->save();
+
+            return response()->json([
+                'status' => 200,
+                'data' => $task
+            ]);
+        }
+
+        if ($user->isScrumMaster()) {
+            $task->executor = $request->executor ? : $task->executor;
+            $task->sprint = $request->sprint ? : $task->sprint;
+            $task->status = $request->status;
+            $task->save();
+
+            return response()->json([
+                'status' => 200,
+                'data' => $task
+            ]);
+        }
+
+        $task->status = $request->status;
+        $task->save();
+
+        return response()->json([
+            'status' => 200,
+            'data' => $task
+        ]);
     }
-
-    $task->status = $request->status;
-    $task->save();
-
-    return response()->json([
-      'status' => 200,
-      'data' => $task
-    ]);
-  }
 }

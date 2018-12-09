@@ -1,5 +1,13 @@
 <template>
   <div class="backlog container">
+    <div class="header">
+      <h3 v-if="sprint">Спринт {{ sprint.name }}</h3>
+      <h3 v-else>Спринт не создан</h3>
+      <div>
+        <a href="#" v-b-modal.createTask class="btn btn-primary">Создать задачу</a>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header">
         <p v-if="sprint">Задачи в {{ sprint.name }}</p>
@@ -10,26 +18,33 @@
       <ul class="list-group list-group-flush" v-if="sprint">
         <draggable v-model="sprintTasks" :options="{group:'tasks'}" style="min-height: 50px">
           <li
-            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            class="list-group-item list-group-item-action"
             v-for="task in sprintTasks"
             :key="task.id"
           >
-            <p>{{ task.name }}</p>
-            <div class="d-flex wrap">
-              <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
-              <span class="badge badge-info badge-pill" v-if="task.status === 0">К ВЫПОЛНЕНИЮ</span>
-              <span class="badge badge-info badge-pill" v-if="task.status === 1">В РАБОТЕ</span>
-              <span class="badge badge-info badge-pill" v-if="task.status === 2">ТЕСТИРУЕТСЯ</span>
-              <span class="badge badge-info badge-pill" v-if="task.status === 3">ВЫПОЛНЕНА</span>
-              <span class="badge badge-success badge-pill" v-if="task.executor">
-                <i class="ni ni-single-02"></i>
-                {{ task.executor.username }}
-              </span>
-              <span class="badge badge-warning badge-pill" v-else>
-                <i class="ni ni-single-02"></i>
-                Не назначен
-              </span>
-            </div>
+            <a
+              href="#"
+              class="d-flex justify-content-between align-items-center"
+              @click.prevent="$store.commit('task/setTask', task)"
+              v-b-modal.taskModal
+            >
+              <p>{{ task.name }}</p>
+              <div class="d-flex wrap">
+                <span class="badge badge-primary badge-pill">TASK-{{ task.id }}</span>
+                <span class="badge badge-info badge-pill" v-if="task.status === 0">К ВЫПОЛНЕНИЮ</span>
+                <span class="badge badge-info badge-pill" v-if="task.status === 1">В РАБОТЕ</span>
+                <span class="badge badge-info badge-pill" v-if="task.status === 2">ТЕСТИРУЕТСЯ</span>
+                <span class="badge badge-info badge-pill" v-if="task.status === 3">ВЫПОЛНЕНА</span>
+                <span class="badge badge-success badge-pill" v-if="task.executor">
+                  <i class="ni ni-single-02"></i>
+                  {{ task.executor.username.length > 10 ? task.executor.username.slice(0, 9) + '...' : task.executor.username }}
+                </span>
+                <span class="badge badge-warning badge-pill" v-else>
+                  <i class="ni ni-single-02"></i>
+                  Не назначен
+                </span>
+              </div>
+            </a>
           </li>
         </draggable>
       </ul>
@@ -47,7 +62,7 @@
             <a
               href="#"
               class="d-flex justify-content-between align-items-center"
-              @click.prevent="$store.commit('tasks/setCurrent', task)"
+              @click.prevent="$store.commit('task/setTask', task)"
               v-b-modal.taskModal
             >
               <p>{{ task.name }}</p>
@@ -59,7 +74,7 @@
                 <span class="badge badge-info badge-pill" v-if="task.status === 3">ВЫПОЛНЕНА</span>
                 <span class="badge badge-success badge-pill" v-if="task.executor">
                   <i class="ni ni-single-02"></i>
-                  {{ task.executor.username }}
+                  {{ task.executor.username.length > 10 ? task.executor.username.slice(0, 9) + '...' : task.executor.username }}
                 </span>
                 <span class="badge badge-warning badge-pill" v-else>
                   <i class="ni ni-single-02"></i>
@@ -172,6 +187,13 @@ export default {
 </script>
 
 <style>
+.backlog .header {
+  display: flex;
+  justify-content: space-between;
+}
+.backlog .header h3 {
+  color: #fff;
+}
 .backlog .card {
   margin-top: 15px;
 }

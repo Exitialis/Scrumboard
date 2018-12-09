@@ -26,7 +26,9 @@ class CreateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:tasks|max:255',
+            'name' => 'required|unique:tasks|string|max:255',
+            'description' => 'string|nullable',
+            'executor' => 'exists:users,id|nullable'
         ];
     }
 }

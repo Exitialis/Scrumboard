@@ -54,6 +54,7 @@
       </footer>
     </div>
     <task-modal></task-modal>
+    <create-task></create-task>
     <div v-if="!$auth.ready()">
       <div style="text-align:center; padding-top:50px;">Loading site...</div>
     </div>
@@ -63,8 +64,9 @@
 <script>
 import navbar from "../components/navbar";
 import taskModal from "../components/taskModal";
+import createTask from "../components/createTask";
 export default {
-  components: { navbar, taskModal }
+  components: { navbar, taskModal, createTask }
 };
 </script>
 
