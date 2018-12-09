@@ -47,7 +47,7 @@
                 <router-link class="nav-link" to="/backlog">Бэклог</router-link>
               </li>
               <li v-if="$auth.check()" class="nav-item dropdown" v-dropdown>
-                <a id="navbarDropdown" class="nav-link dropdown-toggle">
+                <a class="nav-link dropdown-toggle">
                   <i class="ni ni-single-02"></i>
                   <span>{{ user.username }}</span>
                   <span class="caret"></span>

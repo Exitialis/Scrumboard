@@ -1,5 +1,5 @@
 export function install(Vue) {
-  Vue.directive("dropdown", function (el, binding) {
+  Vue.directive("dropdown", function (el) {
     el.onclick = function (event) {
       event.preventDefault();
       let childs = el.children;

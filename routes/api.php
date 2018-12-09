@@ -26,6 +26,7 @@ Route::group(['prefix' => 'auth'], function (\Illuminate\Routing\Router $router)
 Route::group(['middleware' => 'auth:api'], function (\Illuminate\Routing\Router $router) {
   $router->group(['prefix' => 'task'], function (\Illuminate\Routing\Router $router) {
     $router->get('/', 'TasksController@lists')->name('tasks.get');
+    // $router->get('/{task}', 'TasksController@get')->name('task.get');
     $router->put('{task}', 'TasksController@update')->name('tasks.update')->middleware('can:update,task');
     $router->post('/', 'TasksController@create')->name('tasks.create');
   });
@@ -33,5 +34,8 @@ Route::group(['middleware' => 'auth:api'], function (\Illuminate\Routing\Router 
     $router->get('/', 'SprintsController@lists')->name('sprints.get');
     $router->put('{sprint}', 'SprintsController@update')->name('sprints.update')->middleware('can:update,sprint');
     $router->post('/', 'SprintsController@create')->name('sprints.create');
+  });
+  $router->group(['prefix' => 'users'], function (\Illuminate\Routing\Router $router) {
+    $router->get('/', 'UsersController@lists')->name('users.lists');
   });
 });

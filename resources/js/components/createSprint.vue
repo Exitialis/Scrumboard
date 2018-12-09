@@ -94,9 +94,6 @@ export default {
   width: auto;
   display: block;
 }
-#newSprint___BV_modal_body_ .invalid-feedback {
-  display: block;
-}
 </style>
 
 

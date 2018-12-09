@@ -3,7 +3,6 @@ import Vue from 'vue';
 const state = {
   sprint: null,
   tasks: [],
-  current: null
 }
 
 const mutations = {
@@ -31,9 +30,6 @@ const mutations = {
     if (index === -1) return;
     Vue.set(state.tasks[index], 'status', obj.status);
   },
-  setCurrent(state, task) {
-    state.current = task;
-  }
 }
 
 const getters = {

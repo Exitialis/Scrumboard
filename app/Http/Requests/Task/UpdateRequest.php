@@ -29,10 +29,10 @@ class UpdateRequest extends FormRequest
   public function rules()
   {
     return [
-      'name' => 'string|unique:tasks|max:255',
+      'name' => 'string|max:255',
       'description' => 'string',
       'status' => 'in:0,1,2,3' . $this->user()->isMember() ? '|required' : '',
-      'executor' => 'exists:users,id',
+      'executor' => 'exists:users,id|nullable',
       'sprint' => 'exists:sprints,id|nullable'
     ];
   }

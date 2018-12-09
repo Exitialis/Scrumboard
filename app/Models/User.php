@@ -48,6 +48,11 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function scopeExecutors($query)
+    {
+        return $query->where('group', self::MEMBER);
+    }
+
     public function isProductOwner()
     {
         return $this->group === self::PRODUCT_OWNER;

@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="taskModal" centered size="sm" :title="'Просмотр задачи'">
+  <b-modal id="taskModal" centered size="lg" :title="'Просмотр задачи'">
     <form>
       <div class="form-group mb-3" :class="{'has-danger': errors.name}">
         <div class="input-group input-group-alternative">
@@ -46,10 +46,33 @@
           </span>
         </div>
       </div>
-      <div class="text-center">
-        <button type="button" @click.prevent="saveTask" class="btn btn-primary my-4">Сохранить</button>
+      <div class="form-group mb-3" :class="{'has-danger': errors.executor}">
+        <div class="input-group input-group-alternative">
+          <div class="input-group-prepend">
+            <span class="input-group-text">
+              <i class="ni ni-single-02"></i>
+            </span>
+          </div>
+          <select class="custom-select" v-model="executorId">
+            <option :value="null">Не назначен</option>
+            <option
+              v-if="executors"
+              v-for="executor in executors"
+              :key="executor.id"
+              :value="executor.id"
+            >{{ executor.username }}</option>
+            <option v-else>Не удалось получить список исполнителей</option>
+          </select>
+          <span v-if="errors.executor" class="invalid-feedback" role="alert">
+            <strong>{{ errors.executor[0] }}</strong>
+          </span>
+        </div>
       </div>
     </form>
+
+    <div class="text-center" slot="modal-footer">
+      <button type="button" @click.prevent="saveTask" class="btn btn-primary">Сохранить</button>
+    </div>
   </b-modal>
 </template>
 
@@ -75,42 +98,109 @@ export default {
           value: 3
         }
       ],
-      errors: {}
+      errors: {},
+      executors: null
     };
   },
   computed: {
     task() {
-      return this.$store.state.tasks.current;
+      return this.$store.state.task;
     },
-    name() {
-      if (!this.task) return "";
-      return this.task.name;
+    name: {
+      get() {
+        return this.$store.state.task.name;
+      },
+      set(value) {
+        this.$store.commit("task/setName", value);
+      }
     },
-    description() {
-      if (!this.task) return "";
-      return this.task.description;
+    description: {
+      get() {
+        return this.$store.state.task.description;
+      },
+      set(value) {
+        this.$store.commit("task/setDescription", value);
+      }
     },
-    status() {
-      if (!this.task) return 0;
-      return this.task.status;
+    status: {
+      get() {
+        return this.$store.state.task.status;
+      },
+      set(value) {
+        this.$store.commit("task/setStatus", value);
+      }
     },
-    creator() {
-      if (!this.task) return "";
-      return this.task.creator;
+    creator: {
+      get() {
+        return this.$store.state.task.creator;
+      },
+      set(value) {
+        this.$store.commit("task/setCreator", value);
+      }
     },
-    executor() {
-      if (!this.task) return "";
-      return this.task.executor;
+    executorId: {
+      get() {
+        return this.$store.state.task.executor
+          ? this.$store.state.task.executor.id
+          : null;
+      },
+      set(value) {
+        let index = this.executors.findIndex(exec => exec.id === value);
+        this.$store.commit("task/setExecutor", this.executors[index]);
+      }
     },
-    sprint() {
-      if (!this.task) return "";
-      return this.task.sprint;
+    executor: {
+      get() {
+        return this.$store.state.task.executor;
+      },
+      set(value) {
+        this.$store.commit("task/setExecutor", value);
+      }
+    },
+    sprint: {
+      get() {
+        return this.$store.state.task.sprint;
+      },
+      set(value) {
+        this.$store.commit("task/setSprint", value);
+      }
     }
   },
   methods: {
     saveTask() {
-      //this.$http.put('')
+      this.errors = {};
+      this.$http
+        .put("task/" + this.task.id, {
+          name: this.name,
+          description: this.description,
+          status: this.status,
+          executor: this.executor ? this.executor.id : null
+        })
+        .then(res => {
+          this.$snotify.success("Задача сохранена");
+          this.$store.dispatch("task/saveTask", res.data.data);
+          this.$root.$emit("bv::hide::modal", "taskModal");
+        })
+        .catch(err => {
+          if (err.response.status === 422) {
+            this.errors = err.response.data.data;
+          }
+        });
+    },
+    getExecutors() {
+      this.$http
+        .get("users", {
+          params: {
+            executors: true
+          }
+        })
+        .then(res => {
+          this.executors = res.data.data;
+        });
     }
+  },
+  mounted() {
+    this.getExecutors();
   }
 };
 </script>
