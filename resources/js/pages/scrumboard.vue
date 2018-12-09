@@ -47,7 +47,7 @@
       </div>
     </div>
     <div v-else class="row justify-content-center">
-      <div class="col-lg-5">
+      <div class="col-lg-5 col-8">
         <div class="card">
           <div class="card-header">
             <h3>Спринт не найден</h3>
@@ -220,9 +220,7 @@ export default {
   justify-content: space-between;
   flex-wrap: nowrap;
   align-items: stretch;
-  overflow-x: auto;
   width: 100%;
-  height: 100%;
 }
 .board-col:first-child {
   margin-left: 0;
@@ -243,8 +241,8 @@ export default {
 }
 
 .board-col .content {
-  background-color: #f4f5f7;
   height: 100%;
+  background-color: #f4f5f7;
 }
 </style>
 
