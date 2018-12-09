@@ -1,22 +1,33 @@
 <template>
   <header class="header-global">
     <headroom>
-      <nav class="navbar navbar-main navbar-expand-lg navbar-transparent navbar-light">
+      <nav
+        class="navbar navbar-main navbar-expand-lg navbar-transparent navbar-light"
+        v-click-outside="close"
+      >
         <div class="container">
           <router-link class="navbar-brand" to="/">Scrumboard</router-link>
-          <button
-            class="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Открыть меню"
-          >
+          <button class="navbar-toggler" type="button" @click.prevent="show = true">
             <span class="navbar-toggler-icon"></span>
           </button>
 
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <div class="collapse navbar-collapse" :class="{'show': show}">
+            <div class="navbar-collapse-header">
+              <div class="row">
+                <div class="col-6 collapse-brand">
+                  <a href="#">
+                    <!-- <img src=""> -->
+                  </a>
+                </div>
+                <div class="col-6 collapse-close">
+                  <button type="button" class="navbar-toggler" @click.prevent="show = false">
+                    <span></span>
+                    <span></span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Left Side Of Navbar -->
             <ul class="navbar-nav mr-auto"></ul>
 
@@ -35,16 +46,8 @@
               <li v-if="$auth.check()" class="nav-item">
                 <router-link class="nav-link" to="/backlog">Бэклог</router-link>
               </li>
-              <li v-if="$auth.check()" class="nav-item dropdown">
-                <a
-                  id="navbarDropdown"
-                  class="nav-link dropdown-toggle"
-                  href="#"
-                  role="button"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                >
+              <li v-if="$auth.check()" class="nav-item dropdown" v-dropdown>
+                <a id="navbarDropdown" class="nav-link dropdown-toggle">
                   <i class="ni ni-single-02"></i>
                   <span>{{ user.username }}</span>
                   <span class="caret"></span>
@@ -62,14 +65,30 @@
 </template>
 
 <script>
+import ClickOutside from "vue-click-outside";
 import { headroom } from "vue-headroom";
 export default {
   components: {
     headroom
   },
+  directives: {
+    ClickOutside
+  },
+  data() {
+    return {
+      show: false
+    };
+  },
   computed: {
     user() {
       return this.$auth.user();
+    }
+  },
+  methods: {
+    close() {
+      if (this.show) {
+        this.show = false;
+      }
     }
   }
 };
